@@ -8,7 +8,7 @@ before_install:
   - docker pull resin/raspberrypi3-debian:stretch
   - docker run --rm --privileged multiarch/qemu-user-static:register --reset
   - docker build -t rpi-debian-casadi .
-  - docker tag rpi-debian-casadi doanminhdang/rpi-debian-casadi:latest
+  - docker tag rpi-debian-casadi $DOCKER_USERNAME/rpi-debian-casadi:latest
 
 script:
-  - docker push doanminhdang/rpi-debian-casadi:latest
+  - docker push $DOCKER_USERNAME/rpi-debian-casadi:latest
