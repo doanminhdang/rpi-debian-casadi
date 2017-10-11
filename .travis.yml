@@ -4,10 +4,10 @@ services:
   - docker
 
 before_install:
-  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker pull resin/raspberrypi3-debian:stretch
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker pull $DOCKER_USERNAME/rpi-debian-swig:latest
   - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-  - docker build -t rpi-debian-casadi .
+  - docker build --build-arg DOCKER_USERNAME=$DOCKER_USERNAME -t rpi-debian-casadi .
   - docker tag rpi-debian-casadi $DOCKER_USERNAME/rpi-debian-casadi:latest
 
 script:

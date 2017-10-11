@@ -1,46 +1,17 @@
-# Pull base image
-FROM resin/raspberrypi3-debian:stretch
+# Get environment variables, default is the author's username
+ARG DOCKER_USERNAME=doanminhdang
 
-# Install dependencies update apt
-RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
-RUN apt-get install -qy build-essential \
-    gcc g++ \
-    libgsl0-dev \
-    liblapack-dev \
-    libopenblas-dev \
-    libeigen3-dev \
-    python3-tk \
-    automake \
-    libpcre3-dev \
-    git \
-    cmake \
-    python3-dev \
-    pkg-config
-RUN apt-get install byacc # swig
-RUN apt-get install python3-scipy python3-numpy python3-matplotlib
-RUN rm -rf /var/lib/apt/lists/*
+# Pull base image with swig precompiled
+FROM $DOCKER_USERNAME/rpi-debian-swig:latest
 
 # Define working directory
 WORKDIR /home/pi
 
-RUN git clone https://github.com/casadi/casadi.git
-RUN git clone https://github.com/acados/acados.git
+# Display previous time when swig was installed
+RUN DATE_FILE=date_install_swig.txt && \
+    if [ -f $DATE_FILE ]; then cat $DATE_FILE; fi
 
-# Set Python to Python3
-RUN cd /usr/bin && ln -s python3 python
-
-RUN cd /home/pi/acados && git submodule update --recursive --init
-
-# Compile swig
-
-RUN cd /home/pi/acados/external/swig && \
-    ./autogen.sh && \
-    ./configure --prefix=$(pwd)/swig_install --enable-silent-rules && \
-    make && \
-    make install > /dev/null # quiet installation
-
-# Set PATH environment to let casadi and acados find swig
-ENV PATH="/home/pi/acados/external/swig:${PATH}"
+RUN git clone https://github.com/casadi/casadi.git -b master casadi
 
 # Compile casadi
 RUN cd /home/pi/casadi && \
@@ -50,10 +21,14 @@ RUN cd /home/pi/casadi && \
     make && \
     make install
 
-ENV PYTHONPATH="${PYTHONPATH}:/usr/local/lib:/usr/local/python:~/local/lib"
+# Add date for tracing the date of installing
+RUN cd /home/pi && date -u '+%F %T %Z' > date_install_casadi.txt
 
-# Make port 22 available to the world outside this container
-EXPOSE 22
+# Set PYTHONPATH environment for casadi
+ENV PYTHONPATH="${PYTHONPATH}:/usr/local/lib:/usr/local/python"
+
+# Test
+RUN python3 -c "import casadi"
 
 # Define default command
 CMD ["bash"]
