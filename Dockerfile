@@ -1,4 +1,5 @@
 # Get environment variables, default is the author's username
+# Need docker >= 17.0.5 in order to accept ARG before FROM
 ARG DOCKER_USERNAME=doanminhdang
 
 # Pull base image with swig precompiled
