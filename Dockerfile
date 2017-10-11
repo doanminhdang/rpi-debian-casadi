@@ -1,9 +1,9 @@
 # Get environment variables, default is the author's username
 # Need docker >= 17.0.5 in order to accept ARG before FROM
-ARG DOCKER_USERNAME=doanminhdang
+ARG DOCKER_ORGANIZATION=doanminhdang
 
 # Pull base image with swig precompiled
-FROM $DOCKER_USERNAME/rpi-debian-swig:latest
+FROM $DOCKER_ORGANIZATION/rpi-debian-swig:latest
 
 # Define working directory
 WORKDIR /home/pi
