@@ -6,11 +6,12 @@ services:
 before_install:
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  - docker --version
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-  - docker pull $DOCKER_USERNAME/rpi-debian-swig:latest
+  - docker pull $DOCKER_ORGANIZATION/rpi-debian-swig:latest
   - docker run --rm --privileged multiarch/qemu-user-static:register --reset
-  - docker build --build-arg DOCKER_USERNAME=$DOCKER_USERNAME -t rpi-debian-casadi .
-  - docker tag rpi-debian-casadi $DOCKER_USERNAME/rpi-debian-casadi:latest
+  - docker build --build-arg DOCKER_ORGANIZATION=$DOCKER_ORGANIZATION -t rpi-debian-casadi .
+  - docker tag rpi-debian-casadi $DOCKER_ORGANIZATION/rpi-debian-casadi:latest
 
 script:
-  - docker push $DOCKER_USERNAME/rpi-debian-casadi:latest
+  - docker push $DOCKER_ORGANIZATION/rpi-debian-casadi:latest
